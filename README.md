@@ -38,7 +38,8 @@ configuration, or research data.
 ## Jev integration
 
 Atlas uses Jev as a bounded annotation and review signal, not as an authority for
-capital, access, queue, or kill decisions. The integration is documented in
+capital, access, queue, or kill decisions. The portable core is implemented in
+[`integrations/jev/`](integrations/jev/), documented in
 [`docs/jev-integration.md`](docs/jev-integration.md), with the machine-readable
 contract in [`examples/jev-decision-contract.json`](examples/jev-decision-contract.json).
 
@@ -53,11 +54,15 @@ deterministic Atlas gates remain authoritative, and Jev can only annotate or add
 review. Features are disabled by default until frozen benchmark bars are met and
 an operator intentionally enables them.
 
-The Jev runtime remains in the companion Atlas project because it depends on the
-Atlas schema and evidence store. Vendoring that application here would make this
-portable harness misleadingly non-portable and would risk copying local runtime
-state. The integration contract and safety boundary are included here so an
-outside reviewer can assess the whole design without access to private data.
+The client can call the TypeSafe System One endpoint when `TYPESAFE_API_KEY` is
+explicitly supplied; otherwise it returns a clearly labelled deterministic stub.
+No credential is read or transmitted by the test suite.
+
+The portable layer deliberately has no database dependency: it returns a fully
+labelled decision object that an Atlas adapter can persist in the Atlas evidence
+ledger. Atlas's companion runtime adds that ledger, benchmark corpus, and
+domain-specific deterministic gates. Keeping those pieces separate makes the
+portable client runnable and reviewable without copying local research state.
 
 ## Quick start
 
@@ -88,8 +93,9 @@ agent defaults; the standalone role files do not need `config_file` registration
 
 ## What is proven
 
-The v2 rollout was checked with 96 focused tests and 21 installed-launcher
-invocations in an unrelated temporary workspace. The checks cover packet and
+The v2 rollout was checked with 96 focused harness tests, plus 8 portable Jev
+integration tests, and 21 installed-launcher invocations in an unrelated
+temporary workspace. The checks cover packet and
 result contracts, explicit usage accounting, conservative output retention,
 scope-bound context maps, atomic checkpoint updates, stale-review detection, and
 path boundaries. These are behavioral checks for the helper; they do not claim

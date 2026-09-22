@@ -20,10 +20,11 @@ The current decision types are:
 | `evidence_alignment` | whether supplied evidence tests the precommitted falsifier | block or request review; never kill a candidate |
 | `review_escalation` | an additional review reason | add or label review; never clear an existing review |
 
-The implementation is maintained in the companion Atlas checkout in
-`atlas/jev_harness.py` and `atlas/scout/jev_client.py`. The development harness
-stays independent because those modules use the Atlas DuckDB schema and evidence
-store.
+The portable implementation is in [`integrations/jev/`](../integrations/jev/):
+`client.py` provides the live/stub client and `decision.py` provides the
+allowlisted decision layer. The companion Atlas checkout adds the database
+ledger, benchmark corpus, and domain-specific deterministic gates in
+`atlas/jev_harness.py` and `atlas/scout/jev_client.py`.
 
 ## Request boundary
 
@@ -39,12 +40,12 @@ model call is a security boundary.
 
 ## Result boundary
 
-The runtime normalizes each answer into a choice, confidence, probabilities,
-margin over `none_of_these`, usability, and review reasons. Errors, truncation,
-model mismatch, invalid schemas, low confidence, and failure to beat the neutral
-choice remain visible. Raw requests and responses and normalized decisions are
-persisted atomically with request IDs, model identity, backend, latency, retry
-count, HTTP status, state digest, and parent request ID.
+The portable decision layer normalizes each answer into a choice, confidence,
+probabilities, and review reasons. Errors, truncation, model mismatch, invalid
+schemas, low confidence, and failure to beat the neutral choice remain visible.
+The returned object includes request ID, requested and returned model identity,
+backend, latency, retry count, HTTP status, and a state digest so a caller can
+persist it atomically with its own evidence ledger.
 
 When no credential is available, or a transient vendor failure occurs, the client
 may produce a deterministic rules stub. The returned model is then explicitly
@@ -66,8 +67,10 @@ cannot authorize any action in the non-delegable action set.
 
 ## Relationship to this repository
 
-The development harness records the packet, requested routing, supplied
-telemetry, retained logs, checkpoints, and review coverage around work that may
+The portable Jev package returns a decision object but does not silently write to
+a database. An Atlas adapter can persist that object with the surrounding source
+and evidence references. The development harness records the packet, requested
+routing, supplied telemetry, retained logs, checkpoints, and review coverage around work that may
 touch Atlas. It does not infer that a Jev request happened merely because a packet
 asked for one. Conversely, Atlas's Jev ledger does not replace the harness's
 lead/worker/reviewer accounting. Keeping those ledgers separate preserves the
