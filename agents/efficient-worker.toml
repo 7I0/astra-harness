@@ -1,6 +1,6 @@
 name = "efficient-worker"
 description = "Bounded implementation, source extraction or routine regression review with exact scope and acceptance checks."
-model = "gpt-5.6-sol"
+model = "gpt-6-sol"
 model_reasoning_effort = "high"
 developer_instructions = """
 Read the assigned packet and applicable project instructions. Work only in the

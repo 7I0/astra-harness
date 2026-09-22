@@ -43,6 +43,31 @@ Routing fields record requested model, effort, reason, uncertainty, escalation
 condition, and policy version. They do not change the model of a running task or
 prove which model executed it. A custom role file may pin its own model and effort.
 
+The current native route registry recognizes `gpt-6-astra`, `gpt-6-sol`,
+`gpt-6-luna`, `gpt-5.6-sol`, `gpt-5.6-terra`, `gpt-5.6-luna`, and `gpt-5.5`.
+GPT-6 Sol is the default for bounded implementation, routine review, and source
+extraction; GPT-6 Astra remains the default for architecture, economic reasoning,
+and consequential review. GPT-6 Luna and the older 5.x routes remain available
+for explicit selection. These are native Codex route capabilities, not proof that
+the requested route actually ran; observed identity still requires supplied
+telemetry.
+
+The effort ceiling is model-specific:
+
+| Native model | Accepted efforts |
+| --- | --- |
+| `gpt-6-astra`, `gpt-6-sol`, `gpt-5.6-sol`, `gpt-5.6-terra` | `low`, `medium`, `high`, `xhigh`, `max`, `ultra` |
+| `gpt-6-luna`, `gpt-5.6-luna` | `low`, `medium`, `high`, `xhigh`, `max` |
+| `gpt-5.5` | `low`, `medium`, `high`, `xhigh` |
+
+This is a versioned native-Codex policy (`native-codex-2026-09-22`). It is kept
+separate from API model documentation because a packet validates a local agent
+route, not an arbitrary API request.
+
+Version-1 packets retain their historical 5.6 Sol defaults so frozen packets can
+still verify. Version-2 packets should use the current registry and explicit
+selection fields when a route matters.
+
 ## Usage manifests
 
 ```sh

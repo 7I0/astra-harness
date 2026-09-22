@@ -19,12 +19,33 @@ from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PACKET_VERSION = 1
-SUPPORTED_ROUTE_EFFORTS = {
+# Native Codex route capabilities for this installed host. Keep this registry
+# separate from raw API model pages: packet routing targets native Codex roles,
+# whose available effort names are host-specific. `ultra` is supported by the
+# native GPT-6 Astra/Sol routes even where an API surface may expose a smaller
+# reasoning-effort vocabulary.
+NATIVE_MODEL_CAPABILITIES = {
     "gpt-6-astra": {"low", "medium", "high", "xhigh", "max", "ultra"},
+    "gpt-6-sol": {"low", "medium", "high", "xhigh", "max", "ultra"},
+    "gpt-6-luna": {"low", "medium", "high", "xhigh", "max"},
     "gpt-5.6-sol": {"low", "medium", "high", "xhigh", "max", "ultra"},
+    "gpt-5.6-terra": {"low", "medium", "high", "xhigh", "max", "ultra"},
+    "gpt-5.6-luna": {"low", "medium", "high", "xhigh", "max"},
+    "gpt-5.5": {"low", "medium", "high", "xhigh"},
 }
+SUPPORTED_ROUTE_EFFORTS = NATIVE_MODEL_CAPABILITIES
+SUPPORTED_REASONING_EFFORTS = frozenset().union(*SUPPORTED_ROUTE_EFFORTS.values())
+NATIVE_ROUTE_POLICY_VERSION = "native-codex-2026-09-22"
 MAX_PROMPT_CHARS = 12_000
 TASK_ROUTING = {
+    "implementation": "gpt-6-sol",
+    "routine_review": "gpt-6-sol",
+    "source_extract": "gpt-6-sol",
+    "economic_reasoning": "gpt-6-astra",
+    "architecture": "gpt-6-astra",
+    "consequential_review": "gpt-6-astra",
+}
+LEGACY_TASK_ROUTING = {
     "implementation": "gpt-5.6-sol",
     "routine_review": "gpt-5.6-sol",
     "source_extract": "gpt-5.6-sol",
@@ -292,9 +313,9 @@ def _validate_manifest(
     }
 
 
-def _routing(task_class: str) -> dict[str, str]:
+def _routing(task_class: str, *, legacy: bool = False) -> dict[str, str]:
     return {
-        "model": TASK_ROUTING[task_class],
+        "model": (LEGACY_TASK_ROUTING if legacy else TASK_ROUTING)[task_class],
         "reasoning_effort": "high",
         "fork_turns": "none",
     }
@@ -371,7 +392,7 @@ def build_packet(manifest: dict[str, Any], *, root: Path | None = None) -> dict[
         **{key: value for key, value in validated.items() if key != "version" and key != "inputs"},
         "inputs": packet_inputs,
         "routing": ({**validated["routing"], "fork_turns": "none", "identity_kind": "requested"}
-                    if validated["version"] == 2 else _routing(validated["task_class"])),
+                    if validated["version"] == 2 else _routing(validated["task_class"], legacy=True)),
         "expected_result_contract": EXPECTED_RESULT_CONTRACT,
     }
     if root is not None:
@@ -466,7 +487,7 @@ def _validate_packet_structure(
     if packet["task_class"] not in TASK_ROUTING and not (packet["version"] == 2 and packet["task_class"] == "research"):
         raise HarnessError(f"unsupported packet task_class: {packet['task_class']!r}")
     if packet["version"] == 1:
-        if packet["routing"] != _routing(packet["task_class"]):
+        if packet["routing"] != _routing(packet["task_class"], legacy=True):
             raise HarnessError("packet routing does not match the fixed task-class policy")
     else:
         _validate_route(packet["routing"], packet=True)

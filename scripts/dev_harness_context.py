@@ -78,7 +78,7 @@ def guidance_inventory(root, manifest):
                 key, raw = match.groups()
                 value = json.loads(raw)
                 allowed = (key in {"model", "default_subagent_model"} and value in h.SUPPORTED_ROUTE_EFFORTS
-                           or key in {"model_reasoning_effort", "default_subagent_reasoning_effort"} and value in {"low", "medium", "high", "xhigh", "max", "ultra"}
+                           or key in {"model_reasoning_effort", "default_subagent_reasoning_effort"} and value in h.SUPPORTED_REASONING_EFFORTS
                            or key == "service_tier" and value in {"default", "standard", "priority", "flex", "auto"}
                            or key == "max_concurrent_threads_per_session" and type(value) is int)
                 if allowed:

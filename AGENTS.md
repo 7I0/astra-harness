@@ -4,7 +4,7 @@ Preserve the user's goal and selected model and effort. These are workflow
 defaults; project instructions supply domain rules and acceptance.
 
 - Astra owns direction, ambiguous reasoning, architecture, and consequential
-  review. Sol High is an option for bounded implementation, extraction, and
+  review. GPT-6 Sol High is an option for bounded implementation, extraction, and
   routine review, not a task-class requirement. Honor explicit model selection.
   Custom role model and effort pins override spawn values: use a matching role or
   a generic agent with explicit model and effort for other routes. Do not

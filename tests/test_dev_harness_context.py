@@ -17,13 +17,15 @@ def test_inventory_deterministic_private_and_literal(tmp_path):
     text = 'Keep missing evidence unknown and preserve source files.\n'
     put(tmp_path, 'global.md', text)
     put(tmp_path, 'project.md', text + 'Domain rules.\n')
-    put(tmp_path, 'config.toml', 'model = "gpt-6-astra"\nservice_tier = "priority"\napi_key = "SECRET"\n[agents]\ndefault_subagent_model = "gpt-5.6-sol"\n')
+    put(tmp_path, 'config.toml', 'model = "gpt-6-astra"\nservice_tier = "priority"\napi_key = "SECRET"\n[agents]\ndefault_subagent_model = "gpt-6-sol"\n')
     manifest = {'files': [{'path': x, 'kind': 'config' if x.endswith('toml') else 'instructions'}
                           for x in ('global.md', 'project.md', 'config.toml')]}
     result = c.guidance_inventory(tmp_path, manifest)
     assert result == c.guidance_inventory(tmp_path, manifest)
     assert result['overlap'][0]['shared_normalized_lines'] == 1
     assert result['observed_runtime'] is None
+    config_record = next(record for record in result['files'] if record['path'].endswith('/config.toml'))
+    assert {"section": "agents", "key": "default_subagent_model", "value": "gpt-6-sol"} in config_record['literal_configured_settings']
     serialized = json.dumps(result)
     assert 'SECRET' not in serialized and text.strip() not in serialized
     assert 'priority' in serialized

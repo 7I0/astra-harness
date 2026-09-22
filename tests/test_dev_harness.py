@@ -423,7 +423,7 @@ def test_v2_explicit_astra_ultra_is_request_not_observed_identity(harness_repo, 
 @pytest.mark.parametrize("patch,match", [
     ({"model": "gpt-5.6-sol"}, "selected_model"),
     ({"reasoning_effort": "high"}, "selected_effort"),
-    ({"model": "gpt-5.6-luna"}, "unavailable"),
+    ({"model": "gpt-4.1"}, "unavailable"),
     ({"model": "third-party"}, "unavailable"),
     ({"reasoning_effort": "invalid"}, "unavailable"),
     ({"reason": ""}, "non-empty"),
@@ -455,3 +455,42 @@ def test_v2_route_required_and_v1_shape_remains_fixed(harness_repo):
     task["version"] = 1
     with pytest.raises(dev_harness.HarnessError, match="unsupported fields"):
         dev_harness.build_packet(task)
+
+
+def test_native_model_registry_accepts_current_routes_and_keeps_v1_legacy(harness_repo):
+    assert "gpt-6-sol" in dev_harness.SUPPORTED_ROUTE_EFFORTS
+    assert "gpt-6-luna" in dev_harness.SUPPORTED_ROUTE_EFFORTS
+    assert "gpt-5.6-terra" in dev_harness.SUPPORTED_ROUTE_EFFORTS
+    assert "gpt-5.5" in dev_harness.SUPPORTED_ROUTE_EFFORTS
+
+    current = explicit_manifest()
+    current["routing"].update(model="gpt-6-sol", reasoning_effort="high",
+                               selected_model="gpt-6-sol", selected_effort="high")
+    assert dev_harness.build_packet(current)["routing"]["model"] == "gpt-6-sol"
+
+    legacy = dev_harness.build_packet(manifest())
+    assert legacy["version"] == 1
+    assert legacy["routing"]["model"] == "gpt-5.6-sol"
+
+
+@pytest.mark.parametrize("model,effort", [
+    ("gpt-6-luna", "max"),
+    ("gpt-5.5", "xhigh"),
+])
+def test_native_model_registry_enforces_model_specific_effort(model, effort):
+    task = explicit_manifest()
+    task["routing"].update(model=model, reasoning_effort=effort,
+                            selected_model=model, selected_effort=effort)
+    assert dev_harness._validate_route(task["routing"])["model"] == model
+
+
+@pytest.mark.parametrize("model,effort", [
+    ("gpt-6-luna", "ultra"),
+    ("gpt-5.5", "max"),
+])
+def test_native_model_registry_rejects_unsupported_effort(model, effort):
+    task = explicit_manifest()
+    task["routing"].update(model=model, reasoning_effort=effort,
+                            selected_model=model, selected_effort=effort)
+    with pytest.raises(dev_harness.HarnessError, match="unavailable native route"):
+        dev_harness._validate_route(task["routing"])
