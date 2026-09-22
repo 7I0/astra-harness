@@ -1,0 +1,22 @@
+{
+  "scope": [
+    "src/example.py"
+  ],
+  "assumptions": {
+    "oracle": "strict existing assertions"
+  },
+  "groups": [
+    {
+      "id": "behavior",
+      "files": [
+        "src/example.py"
+      ],
+      "dependencies": [
+        "tests/test_example.py"
+      ],
+      "assumptions": [
+        "oracle"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "version": 1,
+  "description": "Byte-identical source and test copies used by this private backup. The generic Atlas identifiers in the core are preserved for compatibility.",
+  "artifacts": [
+    {
+      "original_path": "jev/scripts/dev_harness.py",
+      "export_path": "scripts/dev_harness.py",
+      "sha256": "9e48ba6fb254814f3160d50132d959302a18f5a9d2085f8d1aa7871322473f7a",
+      "bytes": 32648
+    },
+    {
+      "original_path": "jev/scripts/dev_harness_usage.py",
+      "export_path": "scripts/dev_harness_usage.py",
+      "sha256": "971c0a73b4180242bbe13667d9199479e65ba635a1c4f42382ce8f13bb8f34cc",
+      "bytes": 13477
+    },
+    {
+      "original_path": "jev/scripts/dev_harness_context.py",
+      "export_path": "scripts/dev_harness_context.py",
+      "sha256": "4505e13c7baec6091f7712a8f5271737fe2d77660dbc71f1e7008d6f5367be81",
+      "bytes": 12578
+    },
+    {
+      "original_path": "jev/scripts/dev_harness_state.py",
+      "export_path": "scripts/dev_harness_state.py",
+      "sha256": "c17c2c30c0ed60792ef42316becad5b9134505ef1b988f7cbf49bea098e5b1ac",
+      "bytes": 18416
+    },
+    {
+      "original_path": "jev/scripts/dev_harness_cli.py",
+      "export_path": "scripts/dev_harness_cli.py",
+      "sha256": "d96d56c4e4dbcdf05d20ba083d339c05b8f892793825ffedfc8d88955b8eb4af",
+      "bytes": 3950
+    },
+    {
+      "original_path": "jev/tests/test_dev_harness.py",
+      "export_path": "tests/test_dev_harness.py",
+      "sha256": "7739f8a26d90de52df2f03caba732b92d2c3132555638cdb11b651ce9d43ddc4",
+      "bytes": 17356
+    },
+    {
+      "original_path": "jev/tests/test_dev_harness_usage.py",
+      "export_path": "tests/test_dev_harness_usage.py",
+      "sha256": "a15919d5c67aab6c72bd33249435520a6ce4eccdaf26f27b41b2eebc992bc744",
+      "bytes": 9757
+    },
+    {
+      "original_path": "jev/tests/test_dev_harness_context.py",
+      "export_path": "tests/test_dev_harness_context.py",
+      "sha256": "c4e049641c89131392a8242ab2f0ce36b8caabf97b6e6de02b018c8a465b64a1",
+      "bytes": 6160
+    },
+    {
+      "original_path": "jev/tests/test_dev_harness_state.py",
+      "export_path": "tests/test_dev_harness_state.py",
+      "sha256": "98670b022e3429fa228997a3d5e6ce64a0cfe28cece3fe69fa26a5367fd59254",
+      "bytes": 17926
+    },
+    {
+      "original_path": "jev/tests/test_dev_harness_cli.py",
+      "export_path": "tests/test_dev_harness_cli.py",
+      "sha256": "f97af7320306e9e4942977e11a447ece62336f2491c423a5c068a78d55d3c01f",
+      "bytes": 4406
+    }
+  ]
+}
+

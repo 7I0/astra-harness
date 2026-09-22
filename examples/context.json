@@ -1,0 +1,6 @@
+{
+  "scope": [
+    "src/example.py",
+    "tests/test_example.py"
+  ]
+}

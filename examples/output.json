@@ -1,0 +1,7 @@
+{
+  "path": "runs/task-01/checks.log",
+  "command": "python -m pytest -q tests/test_example.py",
+  "exit_status": 0,
+  "format": "pytest",
+  "max_lines": 100
+}

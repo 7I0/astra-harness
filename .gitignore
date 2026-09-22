@@ -1,0 +1,32 @@
+# Python environments and caches
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Local configuration, credentials, and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets/
+credentials/
+
+# Harness runtime artifacts and retained local evidence
+runs/
+runtime/
+telemetry/
+*.log
+*.lock
+*.tmp
+
+# Editor and operating-system state
+.DS_Store
+.idea/
+.vscode/
+

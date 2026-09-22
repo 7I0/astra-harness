@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "task_id": "replace-task-id",
+  "coverage_complete": false,
+  "attempts": [
+    {
+      "attempt_id": "attempt-1",
+      "status": "active",
+      "coverage_complete": false,
+      "agents": [
+        {
+          "thread_id": "replace-lead-id",
+          "role": "lead-including-acceptance",
+          "status": "active",
+          "requested_model": "gpt-6-astra",
+          "requested_effort": "high",
+          "telemetry_files": [],
+          "coverage_complete": false
+        },
+        {
+          "thread_id": "replace-worker-id",
+          "role": "worker",
+          "status": "unknown",
+          "requested_model": "gpt-5.6-sol",
+          "requested_effort": "high",
+          "telemetry_files": [],
+          "coverage_complete": false
+        }
+      ]
+    }
+  ]
+}

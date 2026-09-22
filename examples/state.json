@@ -1,0 +1,9 @@
+{
+  "phase": "implementation",
+  "evidence": [],
+  "active_workers": [],
+  "attempts_used": 1,
+  "next_action": "Inspect result evidence",
+  "state": "active",
+  "unresolved_mutations": []
+}

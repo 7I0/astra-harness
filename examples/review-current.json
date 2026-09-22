@@ -1,0 +1,8 @@
+{
+  "scope": [
+    "src/example.py"
+  ],
+  "assumptions": {
+    "oracle": "strict existing assertions"
+  }
+}

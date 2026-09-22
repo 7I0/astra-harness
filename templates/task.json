@@ -1,0 +1,36 @@
+{
+  "version": 2,
+  "task_id": "replace-with-unique-task-id",
+  "task_class": "implementation",
+  "objective": "Replace with one bounded change and its intended behavior.",
+  "inputs": [
+    {
+      "path": "src/example.py",
+      "reason": "Relevant existing implementation"
+    }
+  ],
+  "allowed_edits": [
+    "src/example.py",
+    "runs/task-01/checks.log",
+    "runs/task-01/result.json"
+  ],
+  "acceptance": [
+    "Replace with a meaningful behavior check and exact command"
+  ],
+  "invariants": [
+    "Preserve unrelated files and existing behavior outside scope"
+  ],
+  "stop_conditions": [
+    "Escalate ambiguous scope or two failed repair attempts"
+  ],
+  "max_attempts": 2,
+  "routing": {
+    "model": "gpt-6-astra",
+    "reasoning_effort": "high",
+    "reason": "Replace with the selected route and why this task needs it",
+    "uncertainty": "Replace with the remaining uncertainty, or explicitly state none",
+    "escalation_condition": "Conflicting evidence or two failed bounded repairs",
+    "policy_version": "local-v2"
+  }
+}
+

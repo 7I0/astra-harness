@@ -1,0 +1,134 @@
+# Operating guide
+
+The harness has one entry point:
+
+```sh
+python /absolute/path/to/codex-development-harness/scripts/dev_harness_cli.py \
+  --root /absolute/project COMMAND [arguments]
+```
+
+Manifest and artifact paths are resolved beneath `--root` unless a command
+explicitly documents otherwise. Inventory manifests may explicitly supply
+absolute files, and usage manifests may explicitly supply absolute telemetry
+paths. Commands emit JSON. Invalid input exits nonzero. Some diagnostics return
+exit zero with a stale or incomplete result, so acceptance must inspect the
+returned fields rather than relying on process status alone.
+
+The relative templates and examples in this repository are source material. Copy
+the file you want into the target project beneath `--root` before using a relative
+command below. For example, copy `templates/task.json` to the target project's
+`task.json`, or copy `examples/context.json` to its `examples/context.json`.
+
+## Task packets and results
+
+Create a task manifest from `templates/task.json`, then prepare and verify it:
+
+```sh
+python scripts/dev_harness_cli.py --root /absolute/project \
+  prepare task.json --out runs/task-01
+python scripts/dev_harness_cli.py --root /absolute/project \
+  verify runs/task-01/packet.json
+python scripts/dev_harness_cli.py --root /absolute/project \
+  check-result runs/task-01/packet.json runs/task-01/result.json
+```
+
+`prepare` copies the manifest, fingerprints declared inputs, embeds the worker
+prompt, and writes a result contract. Use a fresh output directory. `verify`
+checks packet integrity. `check-result` validates the task identity, output and
+log hashes, acceptance-to-check references, statuses, and unresolved findings.
+It does not judge semantic quality; the lead must read the decisive changes and
+evidence.
+
+Routing fields record requested model, effort, reason, uncertainty, escalation
+condition, and policy version. They do not change the model of a running task or
+prove which model executed it. A custom role file may pin its own model and effort.
+
+## Usage manifests
+
+```sh
+python scripts/dev_harness_cli.py --root /absolute/project \
+  usage-manifest examples/usage.json
+```
+
+Declare attempts and every lead, worker, reviewer, retry, and repair explicitly.
+Telemetry files are read only when listed. Missing or active records keep totals
+unknown; known subtotals remain separate. Coverage is an attestation, not proof
+that every agent was declared. Unknown cost stays `null`.
+
+## Guidance inventory and retained output
+
+```sh
+python scripts/dev_harness_cli.py --root /absolute/project \
+  inventory examples/inventory.json
+python scripts/dev_harness_cli.py --root /absolute/project \
+  output-view examples/output.json
+```
+
+Inventory reads only the listed instruction or configuration files and returns
+hashes, sizes, exact-line overlap, and whitelisted literal configuration fields.
+It does not expose file prose or secrets. The inventory example contains a
+placeholder absolute home path; replace it before use.
+
+Output view reads an already retained log and uses the caller-supplied command,
+exit status, format, and line limit. It executes nothing. Failure and warning
+markers receive priority, while omitted line and character counts remain visible.
+Reopen the raw log when an excerpt is not decisive.
+
+## Context maps
+
+```sh
+python scripts/dev_harness_cli.py --root /absolute/project \
+  context-map examples/context.json > runs/context-snapshot.json
+python scripts/dev_harness_cli.py --root /absolute/project \
+  context-check runs/context-snapshot.json examples/context.json
+```
+
+Context maps cover only supplied files. Python definitions, imports, and syntactic
+calls include line pointers; other formats receive hashes. This is not dependency
+discovery. Include relevant callers, fixtures, and configuration, then rerun the
+freshness check after changes.
+
+## Recovery checkpoints
+
+```sh
+python scripts/dev_harness_cli.py --root /absolute/project \
+  checkpoint-init runs/task-01/state.json runs/task-01/packet.json examples/state.json
+python scripts/dev_harness_cli.py --root /absolute/project \
+  checkpoint-update runs/task-01/state.json runs/task-01/packet.json examples/state.json \
+  --expected-revision 0
+python scripts/dev_harness_cli.py --root /absolute/project \
+  checkpoint-inspect runs/task-01/state.json --packet runs/task-01/packet.json
+```
+
+Use checkpoints only for long or interrupted work. Updates use compare-and-swap
+revisions and POSIX locks. Inspect files and worker state before retrying an
+uncertain write. Clearing unresolved mutations or lost workers requires retained
+observation evidence. Budgets never reset, and completed checkpoint state does not
+mean the task result was accepted.
+
+## Review snapshots
+
+```sh
+python scripts/dev_harness_cli.py --root /absolute/project \
+  review-snapshot examples/review.json > runs/review-snapshot.json
+python scripts/dev_harness_cli.py --root /absolute/project \
+  review-check runs/review-snapshot.json examples/review-current.json
+```
+
+A snapshot binds declared file groups, dependencies, and named assumptions.
+Changed fixtures or assumptions reopen dependent groups, and new files require
+review. The lead remains responsible for complete dependency declarations and
+truthful coverage.
+
+## Suggested workflow
+
+1. Keep simple work direct. For a bounded delegation, specify exact inputs,
+   allowed edits, acceptance, invariants, stop conditions, and a maximum attempt
+   count in a v2 task manifest.
+2. Prepare and verify the packet. Give the worker the generated packet and its
+   embedded prompt with fresh, minimal context.
+3. Preserve raw checks. Require a result that follows the packet's result contract.
+4. Run `check-result`, inspect the actual diff and decisive evidence, and request a
+   focused independent review for consequential changes.
+5. Retain the packet, result, and logs together. Treat hashes as identity evidence,
+   not proof of correctness.

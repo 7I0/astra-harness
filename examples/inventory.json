@@ -1,0 +1,12 @@
+{
+  "files": [
+    {
+      "path": "/path/to/home/.codex/AGENTS.md",
+      "kind": "instructions"
+    },
+    {
+      "path": "AGENTS.md",
+      "kind": "instructions"
+    }
+  ]
+}
