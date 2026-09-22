@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "system": "Atlas Jev annotation plane",
+  "role": "bounded annotation and review signal over already-supplied facts",
+  "decision_types": {
+    "candidate_triage": "annotate candidate kind and mechanism family",
+    "evidence_alignment": "classify alignment with a precommitted falsifier",
+    "review_escalation": "add a review reason when supplied evidence is incomplete or ambiguous"
+  },
+  "non_delegable_actions": [
+    "kill",
+    "allow_access",
+    "change_queue_class",
+    "change_expiry",
+    "shell_mutation",
+    "place_order",
+    "use_private_key",
+    "deploy_capital"
+  ],
+  "enforcement": {
+    "candidate_triage": "annotate_or_expand_never_shrink",
+    "evidence_alignment": "block_or_review_never_kill",
+    "review_escalation": "add_or_label_review_never_clear"
+  },
+  "outbound": {
+    "allowlist": true,
+    "unknown_fields": "reject",
+    "credential_redaction": true,
+    "unapproved_address_policy": "replace_with_role",
+    "content_is_untrusted_data": true,
+    "manifest_digest": true
+  },
+  "persistence": {
+    "raw_request_and_response": true,
+    "normalized_decision": true,
+    "atomic_commit": true,
+    "requested_and_returned_model": true,
+    "stub_results_explicitly_labelled": true
+  },
+  "activation": {
+    "default": "disabled",
+    "requires": [
+      "frozen evaluation evidence",
+      "reviewed acceptance bars",
+      "intentional operator enablement"
+    ]
+  },
+  "evidence_limit": "This contract describes integration boundaries; it does not establish live-model quality, complete telemetry, or economic profitability."
+}

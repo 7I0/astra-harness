@@ -1,14 +1,63 @@
 # Codex development harness
 
-This is a portable, private backup of a small development harness for preparing
-bounded task packets, checking worker results, and retaining explicit evidence.
+This is a portable reliability layer for bounded Codex development work. It
+prepares task contracts, checks worker results, records explicit usage and
+evidence, preserves interrupted work, and detects when a prior review is stale.
 It runs locally with Python 3.9 or newer. The core has no runtime dependencies;
 `pytest` is needed only for development checks.
 
-The harness does not launch agents, select a live model, inspect conversation
-history, discover telemetry, or approve work. It records requested routing and
-validates declared inputs, outputs, checks, state, context, and review snapshots.
-A person or lead agent still owns task selection and acceptance.
+The harness is intentionally a control and evidence layer. Native Codex executes
+agents and the lead owns task selection and acceptance. This repository does not
+intercept chats, choose the live model, discover conversation history, infer
+billing, or silently approve semantic correctness. Those boundaries make its
+records auditable instead of turning a requested route or a passing command into
+an unsupported quality claim.
+
+## Architecture
+
+The complete workflow has three deliberately separate layers:
+
+```text
+native Codex + lead
+  plan, dispatch, review, accept, and replan
+              |
+              v
+development harness (this repository)
+  packet contracts, routing declarations, evidence, usage,
+  output excerpts, context maps, checkpoints, and review coverage
+              |
+              v
+Atlas research runtime (companion project)
+  economic gates, source-bound measurements, and Jev annotations
+```
+
+This separation is a feature. The development harness can be reused for other
+projects without importing Atlas's database, market connectors, private runtime
+configuration, or research data.
+
+## Jev integration
+
+Atlas uses Jev as a bounded annotation and review signal, not as an authority for
+capital, access, queue, or kill decisions. The integration is documented in
+[`docs/jev-integration.md`](docs/jev-integration.md), with the machine-readable
+contract in [`examples/jev-decision-contract.json`](examples/jev-decision-contract.json).
+
+Jev's three decision surfaces are candidate triage and mechanism-family
+annotation, evidence alignment against a precommitted falsifier, and adding a
+review reason when supplied evidence is incomplete or ambiguous. Outbound state
+is allowlisted and privacy-transformed. Results retain requested and returned
+model identity, confidence, probabilities, errors, truncation, latency, and
+provenance. A live failure may use a deterministic stub only when the record is
+explicitly marked `stub`; it is never presented as a Jev verdict. The
+deterministic Atlas gates remain authoritative, and Jev can only annotate or add
+review. Features are disabled by default until frozen benchmark bars are met and
+an operator intentionally enables them.
+
+The Jev runtime remains in the companion Atlas project because it depends on the
+Atlas schema and evidence store. Vendoring that application here would make this
+portable harness misleadingly non-portable and would risk copying local runtime
+state. The integration contract and safety boundary are included here so an
+outside reviewer can assess the whole design without access to private data.
 
 ## Quick start
 
@@ -36,6 +85,21 @@ optional Codex roles. Copy the desired `.toml` files to `~/.codex/agents/` for
 user-wide discovery or to a project's `.codex/agents/` directory for project-only
 discovery. [`config.example.toml`](config.example.toml) contains optional current
 agent defaults; the standalone role files do not need `config_file` registration.
+
+## What is proven
+
+The v2 rollout was checked with 96 focused tests and 21 installed-launcher
+invocations in an unrelated temporary workspace. The checks cover packet and
+result contracts, explicit usage accounting, conservative output retention,
+scope-bound context maps, atomic checkpoint updates, stale-review detection, and
+path boundaries. These are behavioral checks for the helper; they do not claim
+matched live-model quality, Jev quality, complete telemetry, or subscription
+savings. Missing cost and usage coverage remains unknown.
+
+The companion Atlas Jev implementation has its own privacy, persistence,
+adjudication, and offline-evaluation tests. Its results are evidence for the
+research runtime, not a reason to weaken this harness's requirement for explicit
+observations and independent acceptance.
 
 ## Development check
 
