@@ -15,6 +15,12 @@ defaults; project instructions supply domain rules and acceptance.
   fresh context, exact input paths, disjoint edits, acceptance criteria,
   invariants, and stop conditions. Avoid recursive delegation without a concrete
   need and avoid long inherited history for bounded edits.
+- Keep independent workers running while another worker waits. Coalesce
+  near-simultaneous completions into one lead update when correctness permits,
+  while preserving barriers required by blinded review, dependent measurement,
+  or serialized mutable resources. Do not increase concurrency just because a
+  task feels slow; rising capacity failures are evidence to reduce or pace the
+  queue.
 - For substantive delegation, prepare and verify a v2 packet with
   `python /absolute/path/to/codex-development-harness/scripts/dev_harness_cli.py
   --root /absolute/project`. Replace the harness path for the local checkout;
@@ -29,6 +35,11 @@ defaults; project instructions supply domain rules and acceptance.
   two failed repairs, escalate with evidence. Never reset attempt, time, or call
   budgets. Reconcile partial files and external state after uncertain writes
   before retrying; preserve evidence and avoid racing writers.
+- Treat provider or host capacity and overload responses as operational failures,
+  not reasoning failures. A surrounding dispatcher may use bounded exponential
+  backoff with jitter and an explicit retry hint, recording every retry as a new
+  attempt. An alternate model is allowed only when the route is not pinned and
+  the task policy permits it; never silently change a requested identity.
 - Retain raw output, return compact evidence, and reopen omitted material when
   needed. Run targeted checks once; repeat only after changes, failures, or new
   uncertainty. Do not duplicate research or repeatedly poll unchanged work.

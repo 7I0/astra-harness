@@ -80,6 +80,32 @@ Telemetry files are read only when listed. Missing or active records keep totals
 unknown; known subtotals remain separate. Coverage is an attestation, not proof
 that every agent was declared. Unknown cost stays `null`.
 
+## Parallel work and runtime efficiency
+
+The helper records and validates work around native Codex; it does not own the
+live scheduler or provider retry loop. The dispatcher using a packet should keep
+independent workers in flight, avoid polling one child while other independent
+work is ready, and combine completions that arrive together before asking the
+lead to re-plan. Preserve explicit barriers when a later stage depends on all
+inputs, when labels must remain blind, or when the target resource is mutable and
+must be serialized.
+
+Capacity, overload, transport, invalid-input, and reasoning failures have
+different remedies. A dispatcher may retry transient capacity or transport
+failures with bounded exponential backoff, jitter, and any supplied retry hint.
+Each retry is a distinct attempt with its own evidence. A fallback route must be
+declared before use and is invalid for a packet whose model or effort is pinned.
+Never treat a capacity failure as evidence that the worker reasoned poorly, and
+never infer a cost saving from a model or API price ratio.
+
+When runtime telemetry is available, retain one append-only event record per
+logical stage or worker with: stable event and task identifiers, stage, queued,
+started, and finished timestamps, requested and observed model/effort, outcome,
+error class, retry hint, response identifiers, token counters, and cache counters.
+This permits queue wait, execution time, retry rate, cache ratio, and accepted
+work to be measured separately. Missing fields stay unknown; this guide does not
+turn caller-supplied timestamps into observed runtime facts.
+
 ## Guidance inventory and retained output
 
 ```sh
@@ -150,10 +176,12 @@ truthful coverage.
 1. Keep simple work direct. For a bounded delegation, specify exact inputs,
    allowed edits, acceptance, invariants, stop conditions, and a maximum attempt
    count in a v2 task manifest.
-2. Prepare and verify the packet. Give the worker the generated packet and its
+2. Launch independent packets together when their scopes do not overlap. Give
+   dependent stages an explicit barrier reason instead of waiting by habit.
+3. Prepare and verify the packet. Give the worker the generated packet and its
    embedded prompt with fresh, minimal context.
-3. Preserve raw checks. Require a result that follows the packet's result contract.
-4. Run `check-result`, inspect the actual diff and decisive evidence, and request a
+4. Preserve raw checks. Require a result that follows the packet's result contract.
+5. Run `check-result`, inspect the actual diff and decisive evidence, and request a
    focused independent review for consequential changes.
-5. Retain the packet, result, and logs together. Treat hashes as identity evidence,
+6. Retain the packet, result, and logs together. Treat hashes as identity evidence,
    not proof of correctness.
