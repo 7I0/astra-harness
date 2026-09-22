@@ -1,12 +1,12 @@
 {
   "version": 1,
-  "description": "Byte-identical source and test copies used by this private backup. The generic Atlas identifiers in the core are preserved for compatibility.",
+  "description": "Source and test provenance for the portable development harness export.",
   "artifacts": [
     {
       "original_path": "jev/scripts/dev_harness.py",
       "export_path": "scripts/dev_harness.py",
-      "sha256": "9e48ba6fb254814f3160d50132d959302a18f5a9d2085f8d1aa7871322473f7a",
-      "bytes": 32648
+      "sha256": "9761041ac4abcc4da0cb6ec1a8fae2b16ba10e0741cf543a401e7acd647b0a43",
+      "bytes": 32624
     },
     {
       "original_path": "jev/scripts/dev_harness_usage.py",
@@ -64,4 +64,3 @@
     }
   ]
 }
-

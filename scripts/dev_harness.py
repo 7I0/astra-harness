@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Prepare and validate compact, deterministic Atlas development task packets.
+"""Prepare and validate compact, deterministic development task packets.
 
 This helper is deliberately offline.  It records work for another process or person
 to perform, but never dispatches a model or executes a validation command.
@@ -343,7 +343,7 @@ def _make_prompt(packet: dict[str, Any]) -> str:
         for key in prompt_keys
     }
     return (
-        "Atlas development task packet. Work only within this explicit contract. "
+        "Development task packet. Work only within this explicit contract. "
         "Stop and escalate on a stop condition; do not broaden scope or lower acceptance.\n"
         + json.dumps(prompt_body, sort_keys=True, ensure_ascii=False, indent=2)
     )
@@ -367,7 +367,7 @@ def build_packet(manifest: dict[str, Any], *, root: Path | None = None) -> dict[
         packet_inputs.append({**item, "sha256": digest, "bytes": size})
     packet = {
         "version": validated["version"],
-        "kind": "atlas_development_task_packet",
+        "kind": "development_task_packet",
         **{key: value for key, value in validated.items() if key != "version" and key != "inputs"},
         "inputs": packet_inputs,
         "routing": ({**validated["routing"], "fork_turns": "none", "identity_kind": "requested"}
@@ -449,7 +449,7 @@ def _validate_packet_structure(
     }
     _exact_fields(packet, required, {"workspace_root"}, "packet")
     if (type(packet["version"]) is not int or packet["version"] not in {1, 2}
-            or packet["kind"] != "atlas_development_task_packet"):
+            or packet["kind"] != "development_task_packet"):
         raise HarnessError("unsupported packet kind or version")
     if not isinstance(packet["packet_content_hash"], str) or not SHA256_RE.fullmatch(packet["packet_content_hash"]):
         raise HarnessError("packet_content_hash must be a lowercase SHA-256")

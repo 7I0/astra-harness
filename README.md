@@ -27,17 +27,17 @@ development harness (this repository)
   output excerpts, context maps, checkpoints, and review coverage
               |
               v
-Atlas research runtime (companion project)
-  economic gates, source-bound measurements, and Jev annotations
+research runtime (companion project)
+  domain gates, source-bound measurements, and Jev annotations
 ```
 
 This separation is a feature. The development harness can be reused for other
-projects without importing Atlas's database, market connectors, private runtime
-configuration, or research data.
+projects without importing a research application's database, market connectors,
+private runtime configuration, or research data.
 
 ## Jev integration
 
-Atlas uses Jev as a bounded annotation and review signal, not as an authority for
+The research runtime uses Jev as a bounded annotation and review signal, not as an authority for
 capital, access, queue, or kill decisions. The portable core is implemented in
 [`integrations/jev/`](integrations/jev/), documented in
 [`docs/jev-integration.md`](docs/jev-integration.md), with the machine-readable
@@ -50,7 +50,7 @@ is allowlisted and privacy-transformed. Results retain requested and returned
 model identity, confidence, probabilities, errors, truncation, latency, and
 provenance. A live failure may use a deterministic stub only when the record is
 explicitly marked `stub`; it is never presented as a Jev verdict. The
-deterministic Atlas gates remain authoritative, and Jev can only annotate or add
+deterministic domain gates remain authoritative, and Jev can only annotate or add
 review. Features are disabled by default until frozen benchmark bars are met and
 an operator intentionally enables them.
 
@@ -59,9 +59,9 @@ explicitly supplied; otherwise it returns a clearly labelled deterministic stub.
 No credential is read or transmitted by the test suite.
 
 The portable layer deliberately has no database dependency: it returns a fully
-labelled decision object that an Atlas adapter can persist in the Atlas evidence
-ledger. Atlas's companion runtime adds that ledger, benchmark corpus, and
-domain-specific deterministic gates. Keeping those pieces separate makes the
+labelled decision object that a domain adapter can persist in its evidence ledger.
+The companion runtime adds that ledger, benchmark corpus, and domain-specific
+deterministic gates. Keeping those pieces separate makes the
 portable client runnable and reviewable without copying local research state.
 
 ## Quick start
@@ -102,7 +102,7 @@ path boundaries. These are behavioral checks for the helper; they do not claim
 matched live-model quality, Jev quality, complete telemetry, or subscription
 savings. Missing cost and usage coverage remains unknown.
 
-The companion Atlas Jev implementation has its own privacy, persistence,
+The companion research integration has its own privacy, persistence,
 adjudication, and offline-evaluation tests. Its results are evidence for the
 research runtime, not a reason to weaken this harness's requirement for explicit
 observations and independent acceptance.

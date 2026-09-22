@@ -1,16 +1,16 @@
-# Atlas Jev integration
+# Jev integration
 
-This document describes how the Atlas research runtime uses Jev alongside the
-portable development harness. It is a contract and architecture record; it does
-not include Atlas production databases, credentials, signer files, or local
+This document describes the optional Jev decision plane that can sit alongside
+the portable development harness. It is a contract and architecture record; it
+does not include production databases, credentials, signer files, or local
 research captures.
 
 ## Role
 
-Jev supplies bounded judgments over facts that Atlas has already assembled. It
+Jev supplies bounded judgments over facts that a caller has already assembled. It
 does not discover opportunities, establish economic truth, authorize access,
 change a queue, kill a lead, place an order, use a private key, deploy capital,
-or replace the deterministic evidence gates.
+or replace deterministic evidence gates.
 
 The current decision types are:
 
@@ -22,9 +22,8 @@ The current decision types are:
 
 The portable implementation is in [`integrations/jev/`](../integrations/jev/):
 `client.py` provides the live/stub client and `decision.py` provides the
-allowlisted decision layer. The companion Atlas checkout adds the database
-ledger, benchmark corpus, and domain-specific deterministic gates in
-`atlas/jev_harness.py` and `atlas/scout/jev_client.py`.
+allowlisted decision layer. A domain adapter can add a database ledger,
+benchmark corpus, and domain-specific deterministic gates.
 
 ## Request boundary
 
@@ -54,25 +53,23 @@ live Jev result. A definitive authentication rejection stops the run.
 
 ## Evaluation and activation
 
-Atlas evaluates the three decision surfaces against frozen, source-bound labels
-and deterministic baselines. The acceptance bars cover macro-F1, per-class
-recall, checklist recall, evidence-alignment precision, review recall, and an
-over-review ceiling. The benchmark is labelled provisional and is not presented
-as a general model-quality claim.
+The included evaluator reports accuracy, macro-F1, per-class precision and recall,
+and a confusion map for closed-set decisions. A domain adapter can add frozen,
+source-bound labels, deterministic baselines, and outcome metrics appropriate to
+its work. Generic classification metrics are not presented as proof of economic
+quality or model savings.
 
 The feature switches start disabled. An evaluation can report metrics and a
 proposed activation, but production annotation is enabled only through an
-intentional operator action after the bars and the evidence are reviewed. Jev
-cannot authorize any action in the non-delegable action set.
+intentional operator action after the bars and evidence are reviewed. Jev cannot
+authorize any action in the non-delegable action set.
 
 ## Relationship to this repository
 
-The portable Jev package returns a decision object but does not silently write to
-a database. An Atlas adapter can persist that object with the surrounding source
-and evidence references. The development harness records the packet, requested
-routing, supplied telemetry, retained logs, checkpoints, and review coverage around work that may
-touch Atlas. It does not infer that a Jev request happened merely because a packet
-asked for one. Conversely, Atlas's Jev ledger does not replace the harness's
+The development harness records the packet, requested routing, supplied
+telemetry, retained logs, checkpoints, and review coverage around work that may
+use Jev. It does not infer that a Jev request happened merely because a packet
+asked for one. Conversely, a Jev ledger does not replace the harness's
 lead/worker/reviewer accounting. Keeping those ledgers separate preserves the
 difference between requested work, observed work, model output, and accepted
 work.

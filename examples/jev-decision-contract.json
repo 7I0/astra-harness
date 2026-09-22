@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "system": "Atlas Jev annotation plane",
+  "system": "Jev annotation plane",
   "role": "bounded annotation and review signal over already-supplied facts",
   "decision_types": {
     "candidate_triage": "annotate candidate kind and mechanism family",
